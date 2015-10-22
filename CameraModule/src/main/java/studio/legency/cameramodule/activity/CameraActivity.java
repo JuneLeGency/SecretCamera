@@ -67,6 +67,8 @@ public class CameraActivity extends BaseActivity implements PhotoTakenCallback, 
     private boolean openPreview;
 
     private boolean saving;
+    private String last_path;
+    private String last_name;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -143,6 +145,9 @@ public class CameraActivity extends BaseActivity implements PhotoTakenCallback, 
 
     @Override
     public void photoSaved(String path, String name) {
+
+        this.last_path = path;
+        this.last_name = name;
         saving = false;
         Toast.makeText(this, "Photo " + name + " saved", Toast.LENGTH_SHORT).show();
         Timber.d("Photo " + name + " saved");
@@ -157,7 +162,13 @@ public class CameraActivity extends BaseActivity implements PhotoTakenCallback, 
         }
     }
 
+    @Override
+    public void openPreview() {
+        openPreview(last_path,last_name);
+    }
+
     private void openPreview(String path, String name) {
+        if(TextUtils.isEmpty(path)||TextUtils.isEmpty(name))return ;
         Intent intent = new Intent(this, PhotoPreviewActivity.class);
         intent.putExtra(BasePhotoActivity.EXTRAS.PATH, path);
         intent.putExtra(BasePhotoActivity.EXTRAS.NAME, name);

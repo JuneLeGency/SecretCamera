@@ -23,12 +23,17 @@
 
 package studio.legency.cameramodule.fragment;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +53,7 @@ import studio.legency.cameramodule.model.HDRMode;
 import studio.legency.cameramodule.model.Quality;
 import studio.legency.cameramodule.model.Ratio;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -101,6 +107,59 @@ public class CameraFragment extends BaseFragment implements PhotoSavedListener, 
     private int cameraId;
     private int outputOrientation;
 
+    public  void openFolder(){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath() + File.separator + Environment.DIRECTORY_DCIM + File.separator + "Camera");
+        intent.setDataAndType(uri, "text/csv");
+        startActivity(Intent.createChooser(intent, "Open folder"));
+    }
+
+    GestureDetector.SimpleOnGestureListener l = new GestureDetector.SimpleOnGestureListener(){
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if (Math.abs(velocityY) < 100) {
+                // System.out.println("手指移动的太慢了");
+                return true;
+            }
+
+            // right
+            if ((e2.getRawX() - e1.getRawX()) > 200) {
+                Log.i("fling","right");
+                openFolder();
+                return true;
+            }
+            //left
+            if ((e1.getRawX() - e2.getRawX()) > 200) {
+                Log.i("fling","left");
+                callback.openPreview();
+                return true;
+            }
+
+            // 手势向下 down
+            if ((e2.getRawY() - e1.getRawY()) > 200) {
+                Log.i("fling","down");
+                previewContainer.setVisibility(View.INVISIBLE);
+                return true;
+            }
+            // 手势向上 up
+            if ((e1.getRawY() - e2.getRawY()) > 200) {
+                Log.i("fling","up");
+                previewContainer.setVisibility(View.VISIBLE);
+                return true;
+            }
+            return super.onFling(e1, e2, velocityX, velocityY);
+        }
+    };
+    private View.OnTouchListener captureListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            return gestureDetector.onTouchEvent(motionEvent);
+        }
+    };
+
+    GestureDetector gestureDetector = new GestureDetector(getActivity(),l);
+
     public static CameraFragment newInstance(int layoutId, PhotoTakenCallback callback, Bundle params) {
         CameraFragment fragment = new CameraFragment();
         fragment.layoutId = layoutId;
@@ -127,6 +186,7 @@ public class CameraFragment extends BaseFragment implements PhotoSavedListener, 
         if (camera == null) {
             return;
         }
+
         initScreenParams();
         parameters = camera.getParameters();
         zoomRatios = parameters.getZoomRatios();
@@ -182,6 +242,7 @@ public class CameraFragment extends BaseFragment implements PhotoSavedListener, 
         }
         ImageView canvasFrame = new ImageView(activity);
         cameraPreview = new CameraPreview(activity, camera, canvasFrame, this, this);
+
         previewContainer.addView(cameraPreview);
         previewContainer.addView(canvasFrame);
         previewContainer.setOnClickListener(new View.OnClickListener() {
@@ -213,6 +274,8 @@ public class CameraFragment extends BaseFragment implements PhotoSavedListener, 
 
             });
         }
+
+        mCapture.setOnTouchListener(captureListener);
 
         flashModeButton = (ImageButton) view.findViewById(studio.legency.cameramodule.R.id.flash_mode);
         if (flashModeButton != null) {

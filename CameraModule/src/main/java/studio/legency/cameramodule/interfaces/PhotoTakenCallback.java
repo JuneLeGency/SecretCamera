@@ -27,4 +27,6 @@ public interface PhotoTakenCallback {
 
     public void photoTaken(byte[] data, int orientation);
 
+    public void openPreview();
+
 }

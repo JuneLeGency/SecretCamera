@@ -184,6 +184,20 @@ public class CameraFragment extends BaseFragment implements PhotoSavedListener, 
         cameraPreview = new CameraPreview(activity, camera, canvasFrame, this, this);
         previewContainer.addView(cameraPreview);
         previewContainer.addView(canvasFrame);
+        previewContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.setVisibility(View.INVISIBLE);
+            }
+        });
+        cameraPreview.setOnLongClickListener(new View.OnLongClickListener(){
+
+            @Override
+            public boolean onLongClick(View view) {
+                view.setVisibility(View.INVISIBLE);
+                return false;
+            }
+        });
         cameraPreview.setFocusMode(focusMode);
 
         progressBar = (ProgressBar) view.findViewById(studio.legency.cameramodule.R.id.progress);
@@ -306,8 +320,10 @@ public class CameraFragment extends BaseFragment implements PhotoSavedListener, 
     private void initScreenParams() {
         DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        mScreenWidth = metrics.widthPixels;
-        mScreenHeight = metrics.heightPixels;
+//        mScreenWidth = metrics.widthPixels;
+//        mScreenHeight = metrics.heightPixels;
+        mScreenWidth = metrics.widthPixels/4;
+        mScreenHeight = metrics.heightPixels/4;
         mNavigationBarHeight = getNavigationBarHeight();
         mStatusBarHeight = getStatusBarHeight();
     }
@@ -605,7 +621,9 @@ public class CameraFragment extends BaseFragment implements PhotoSavedListener, 
      */
     private void setPreviewContainerSize(int width, int height, Ratio ratio) {
         height = (width / ratio.h) * ratio.w;
-        previewContainer.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
+        RelativeLayout.LayoutParams a = new RelativeLayout.LayoutParams(width, height);
+        a.rightMargin = 0;
+//        previewContainer.setLayoutParams(a);
     }
 
     private Map<Ratio, Map<Quality, Camera.Size>> buildPictureSizesRatioMap(List<Camera.Size> sizes) {

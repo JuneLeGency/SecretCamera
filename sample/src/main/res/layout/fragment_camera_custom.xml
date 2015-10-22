@@ -24,37 +24,21 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/black">
-
-    <FrameLayout
-         android:id="@+id/camera_preview"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-        android:visibility="invisible"/>
-
-    <RelativeLayout
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:layout_below="@id/camera_preview"
-         android:layout_alignParentBottom="true">
-
-
-        <ImageButton
-             android:src="@drawable/camera_capture"
-             android:background="@null"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:layout_centerInParent="true"
-            android:visibility="gone"
-             android:layout_margin="@dimen/small_margin"/>
-
-    </RelativeLayout>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
     <ImageView
         android:id="@+id/capture"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/fake"/>
+        android:scaleType="matrix"
+        android:src="@drawable/fake" />
 
+    <FrameLayout
+        android:id="@+id/camera_preview"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        />
 </RelativeLayout>
